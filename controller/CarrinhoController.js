@@ -1,79 +1,68 @@
-const { carrinho } = require("../models/models");
+const { Carrinho } = require("../models/models");
 
-const getAllTasks = async (req, res) => {
-  if (req.query.name) {
-    req.query.name = {
-      $regex: req.query.name,
-      $options: "i",
-    };
-  }
-  if (req.query.startDate) {
-    if (!req.query.finishDate) {
-      req.query.finishDate = req.query.startDate;
-    }
-    req.query = {
-      date: {
-        $gte: req.query.startDate,
-        $lt: req.query.finishDate,
-      },
-    };
-  }
+const getCart = async (req, res) => {
   try {
-    const tasksList = await Task.find(req.query).sort("date");
-    return res.send(tasksList);
+    const cart = await Carrinho.find();
+    return res.status(200).send(cart);
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    res.status(500).send(err.message);
   }
 };
 
-// const createTask = async (req, res) => {
-//   const task = req.body;
-//   if (!task.name) {
-//     return res.redirect("/");
-//   }
+const postCart = async (req, res) => {
+  const cart = req.body;
 
-//   try {
-//     await Task.create(task);
-//     return res.redirect("/");
-//   } catch (err) {
-//     res.status(500).send({ error: err.message });
-//   }
-// };
+  try {
+    await Carrinho.create(cart);
+    return res
+      .status(200)
+      .send({ success: true, message: "Produto salvo com sucesso!" });
+  } catch (err) {
+    res.status(500).send({ success: false, error: err.message });
+  }
+};
 
-// const getById = async (req, res) => {
-//   try {
-//     const task = await Task.findOne({ _id: req.params.id });
-//     const tasksList = await Task.find();
+const putProductCart = async (req, res) => {
+  let product = req.body;
+  product.total = 0;
 
-//     res.status(200).send({ task, tasksList });
-//   } catch (err) {
-//     res.status(500).send({ error: err.message });
-//   }
-// };
+  product.items.map((item) => {
+    product.total += Number(item.preco) * Number(item.quantidade);
+  });
+  console.log(product);
+  try {
+    await Carrinho.updateOne({ _id: req.params.id }, product);
+    return res.status(200).send({ success: true });
+  } catch (err) {
+    res.status(500).send({ success: false, error: err.message });
+  }
+};
 
-// const updateTask = async (req, res) => {
-//   try {
-//     const task = req.body;
-//     await Task.updateOne({ _id: req.params.id }, task);
-//     res.redirect("/");
-//   } catch (err) {
-//     res.status(500).send({ error: err.message });
-//   }
-// };
+const deleteProductCart = async (req, res) => {
+  try {
+    let cart = await Carrinho.find();
+    cart = cart[0];
+    let index = cart.items.findIndex(
+      (item) => item.productId === req.params.id
+    );
+    console.log(req.params.id);
+    if (index === -1) {
+      throw "elemento nao encontrado";
+    }
 
-// const deleteTask = async (req, res) => {
-//   try {
-//     await Task.findOneAndDelete({ _id: req.params.id });
-//     res.redirect("/");
-//   } catch (err) {
-//     res.status(500).send({ error: err.message });
-//   }
-// };
+    cart.items.splice(index, 1);
+    console.log(cart);
+
+    await Carrinho.updateOne({ _id: cart._id }, cart);
+    return res.status(200).send({ success: true });
+  } catch (err) {
+    res.status(500).send({ success: false, error: err.message });
+  }
+};
 
 module.exports = {
-  getAllTasks,
-  // createTask,
-  // getById,
-  // updateTask,
-  // deleteTask,
+  getCart,
+  putProductCart,
+  deleteProductCart,
+  postCart,
 };

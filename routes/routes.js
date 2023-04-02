@@ -3,13 +3,15 @@ const ProdutoController = require("../controller/ProdutoController");
 const CarrinhoController = require("../controller/CarrinhoController");
 
 routes.get("/produtos", ProdutoController.getAllProducts);
-routes.get("/produtos/:categoria", ProdutoController.getAllProducts);
-routes.post("/produtos", ProdutoController.createProduct);
-routes.put("/produtos/:id", ProdutoController.getAllProducts);
-routes.delete("/produtos/:id", ProdutoController.getAllProducts);
+routes.get("/produtos/filtrar", ProdutoController.getFilteredProducts);
 
-routes.get("/carrinho", CarrinhoController.getAllTasks);
-routes.put("/carrinho/produto/:id", CarrinhoController.getAllTasks);
-routes.delete("/carrinho/produto/:id", CarrinhoController.getAllTasks);
+routes.post("/produtos", ProdutoController.createProduct);
+routes.put("/produtos/:id", ProdutoController.putProduct);
+routes.delete("/produtos/:id", ProdutoController.deleteProduct);
+
+routes.get("/carrinho", CarrinhoController.getCart);
+routes.post("/carrinho", CarrinhoController.postCart);
+routes.put("/carrinho/produto/:id", CarrinhoController.putProductCart);
+routes.delete("/carrinho/produto/:id", CarrinhoController.deleteProductCart);
 
 module.exports = routes;

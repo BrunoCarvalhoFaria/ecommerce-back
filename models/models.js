@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 const produtoSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    require: true,
-  },
   nome: {
     type: String,
     require: true,
   },
   categoria: {
+    type: String,
+    require: true,
+  },
+  fabricante: {
     type: String,
     require: true,
   },
@@ -33,19 +33,19 @@ const produtoSchema = new mongoose.Schema({
 
 const carrinhoSchema = new mongoose.Schema({
   items: [
-    { id: { type: Number, require: true } },
-    { quantidade: { type: Number, require: true } },
-    { nome: { type: String, require: true } },
-    { preco: { type: Number, require: true } },
+    {
+      productId: String,
+      quantidade: Number,
+      nome: String,
+      preco: Number,
+      precoTotalItem: Number,
+    },
   ],
-  total: {
-    type: Number,
-    require: true,
-  },
+  total: Number,
 });
 
-const Produto = mongoose.model("produto", produtoSchema);
-const Carrinho = mongoose.model("carrinho", carrinhoSchema);
+const Produto = mongoose.model("Produto", produtoSchema);
+const Carrinho = mongoose.model("Carrinho", carrinhoSchema);
 
 module.exports = {
   Produto: Produto,
